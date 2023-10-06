@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WebApi.Data;
 using WebApi.Dtos;
 using WebApi.Models;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace WebApi.Services
 {
@@ -90,7 +91,7 @@ namespace WebApi.Services
         }
 
 
-        public bool AgregarVideoJuego(VideoJuego videojuego)
+        public async Task<bool> AgregarVideoJuego(VideoJuego videojuego)
         {
             try
             {
@@ -103,7 +104,7 @@ namespace WebApi.Services
                 _context.VideoJuego.Add(videojuego);
 
                 // Guardar los cambios en la base de datos
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return true;
             }
@@ -113,12 +114,12 @@ namespace WebApi.Services
             }
         }
 
-        public bool EliminarVideoJuego(int id)
+        public async Task<bool> EliminarVideoJuego(int id)
         {
             try
             {
                 // Obtener el videojuego del contexto de la base de datos
-                VideoJuego videojuego = _context.VideoJuego.Find(id);
+                VideoJuego videojuego = await _context.VideoJuego.FindAsync(id);
 
                 // Si el videojuego no existe, devuelve falso
                 if (videojuego == null)
@@ -130,7 +131,7 @@ namespace WebApi.Services
                 _context.VideoJuego.Remove(videojuego);
 
                 // Guardo los cambios en la base de datos
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return true;
             }
@@ -139,11 +140,11 @@ namespace WebApi.Services
                 return false;
             }
         }
-        public bool ModificarVideoJuego(VideoJuego videoJuegoNuevo,int id)
+        public async Task<bool> ModificarVideoJuego(VideoJuego videoJuegoNuevo,int id)
         {
             try
             {
-                VideoJuego videojuego = _context.VideoJuego.Find(id);
+                VideoJuego videojuego = await _context.VideoJuego.FindAsync(id);
                 if (videojuego == null) // verifico que se encuentre el videojuego
                 {
                     return false;
@@ -154,7 +155,7 @@ namespace WebApi.Services
                 videojuego.desarrollador = videoJuegoNuevo.desarrollador;
                 videojuego.peso = videoJuegoNuevo.peso;
 
-                _context.SaveChanges();  // actualizo bd
+                await _context.SaveChangesAsync();  // actualizo bd
 
                 return true;    // retorno modificacion exitosa
 
@@ -166,26 +167,22 @@ namespace WebApi.Services
             }
         }
 
-        public bool ModificarNombre(int id, JsonPatchDocument<VideoJuegoDto> nuevoNombre)
+        public async Task<bool> ModificarNombre(int id, JsonPatchDocument<VideoJuego> jsonPatch)
         {
             try
             {
                 // Buscar el videojuego por ID
-                var videojuego = _context.VideoJuego.Find(id);
+                var videojuego = await _context.VideoJuego.FindAsync(id);
 
                 // Si el videojuego no existe, devuelve false
                 if (videojuego == null)
                 {
                     return false;
                 }
-
-                // Modificar solo el nombre del videojuego
-                videojuego.nombre = nuevoNombre;
-
-                // Guardar los cambios en la base de datos
-                _context.SaveChanges();
-
+                jsonPatch.ApplyTo(videojuego);
+                await _context.SaveChangesAsync();  // actualizo bd
                 return true;
+
             }
             catch (Exception)
             {

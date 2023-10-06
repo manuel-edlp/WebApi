@@ -34,10 +34,11 @@ namespace WebApi
         {
 
             services.AddDbContext<ApiDb>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSQLConnection")));
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             
             // registro el servicio videojuegos para poder inyectarlo en mi videojuego controller
             services.AddScoped<VideoJuegoService>();
+      
 
             // Configuración de AutoMapper
             services.AddAutoMapper(typeof(Startup));

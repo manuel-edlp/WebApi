@@ -5,6 +5,7 @@ using WebApi.Models;
 using WebApi.Dtos;
 using Microsoft.AspNetCore.Http;
 using WebApi.Services;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace WebApi.Controllers
 {
@@ -40,14 +41,14 @@ namespace WebApi.Controllers
 
         [HttpPost] // agrega videojuego
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(VideoJuego))]
-        public IActionResult AgregarVideoJuego([FromBody] VideoJuego videojuego)
+        public async Task<IActionResult> AgregarVideoJuego([FromBody] VideoJuego videojuego)
         {
             if (videojuego == null)
             {
                 return BadRequest("Los datos del videojuego no son válidos.");
             }
 
-            if (_videoJuegoService.AgregarVideoJuego(videojuego))
+            if (await _videoJuegoService.AgregarVideoJuego(videojuego))
             {
                 // Devuelvo una respuesta de éxito con el código de estado 201 (Created)
                 return CreatedAtAction("GetNombre", new { id = videojuego.id }, videojuego);
@@ -61,9 +62,9 @@ namespace WebApi.Controllers
 
 
         [HttpDelete("{id}")] // elimina videojuego
-        public IActionResult EliminarVideoJuego(int id)
+        public async Task <IActionResult> EliminarVideoJuego(int id)
         {
-            if (_videoJuegoService.EliminarVideoJuego(id))
+            if (await _videoJuegoService.EliminarVideoJuego(id))
             {
                 // Devuelvo una respuesta de éxito
                 return NoContent(); // Código 204 (Sin contenido)
@@ -76,29 +77,29 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("{id}")] // modifico un videojuego completo por id
-        public IActionResult ModificarVideoJuego([FromBody] VideoJuego videoJuegoNuevo, int id)
+        public async Task <IActionResult> ModificarVideoJuego([FromBody] VideoJuego videoJuegoNuevo, int id)
         {
             if (videoJuegoNuevo == null) // verifico que los datos no esten vacios
             {
                 return BadRequest("Datos del videojuego inválidos");
             }
 
-            if (_videoJuegoService.ModificarVideoJuego(videoJuegoNuevo, id)) // verifico si se modifica exitosamente
+            if (await _videoJuegoService.ModificarVideoJuego(videoJuegoNuevo, id)) // verifico si se modifica exitosamente
             {
                 return Ok(); // retorno codigo 200 por modificacion exitosa
             }
             else  return NotFound("Fallo en la modificación");
         }
 
-        [HttpPut("{id}/nombre")] // Modifica el nombre de un videojuego por ID
-        public IActionResult ModificarNombreVideoJuego(int id, [FromBody] string nuevoNombre)
+        [HttpPatch("{id}")] // Modifica el nombre de un videojuego por ID
+        public async Task<IActionResult> ModificarNombre(int id, [FromBody] JsonPatchDocument<VideoJuego> jsonPatch)
         {
-            if (string.IsNullOrEmpty(nuevoNombre))
+            if (jsonPatch == null)
             {
                 return BadRequest("El nuevo nombre no es válido.");
             }
 
-            if (_videoJuegoService.ModificarNombre(id, nuevoNombre))
+            if (await _videoJuegoService.ModificarNombre(id, jsonPatch))
             {
                 // Devuelvo una respuesta de éxito con código 200 (OK)
                 return Ok();
