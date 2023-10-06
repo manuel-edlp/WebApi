@@ -70,8 +70,8 @@ namespace WebApi.Services
 
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(string desarrollador)
         {
-            // Realiza una consulta a la base de datos para devolver todos los videojuegos de un año determinado
-            var videojuegos = await _context.VideoJuego.Where(v => v.desarrollador == desarrollador).ToListAsync();
+            // Realiza una consulta a la base de datos para devolver todos los videojuegos de un desarrollador determinado
+            var videojuegos = await _context.VideoJuego.Where(v => v.desarrollador.nombre == desarrollador).ToListAsync();
 
             var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
 
@@ -167,7 +167,7 @@ namespace WebApi.Services
             }
         }
 
-        public async Task<bool> ModificarNombre(int id, JsonPatchDocument<VideoJuego> jsonPatch)
+        public async Task<bool> Modificar(int id, JsonPatchDocument<VideoJuego> jsonPatch)
         {
             try
             {

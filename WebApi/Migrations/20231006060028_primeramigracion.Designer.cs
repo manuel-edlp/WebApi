@@ -9,8 +9,8 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(ApiDb))]
-    [Migration("20230918231613_firstmigration")]
-    partial class firstmigration
+    [Migration("20231006060028_primeramigracion")]
+    partial class primeramigracion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,6 +19,22 @@ namespace WebApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+            modelBuilder.Entity("WebApi.Models.Desarrollador", b =>
+                {
+                    b.Property<int>("desarrolladorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("desarrolladorId");
+
+                    b.ToTable("Desarrollador");
+                });
 
             modelBuilder.Entity("WebApi.Models.VideoJuego", b =>
                 {
@@ -30,10 +46,11 @@ namespace WebApi.Migrations
                     b.Property<int>("año")
                         .HasColumnType("integer");
 
-                    b.Property<string>("desarrollador")
-                        .HasColumnType("text");
+                    b.Property<int>("desarrolladorId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("nombre")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<float>("peso")
@@ -41,7 +58,20 @@ namespace WebApi.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("VideoJuegos");
+                    b.HasIndex("desarrolladorId");
+
+                    b.ToTable("VideoJuego");
+                });
+
+            modelBuilder.Entity("WebApi.Models.VideoJuego", b =>
+                {
+                    b.HasOne("WebApi.Models.Desarrollador", "desarrollador")
+                        .WithMany()
+                        .HasForeignKey("desarrolladorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("desarrollador");
                 });
 #pragma warning restore 612, 618
         }

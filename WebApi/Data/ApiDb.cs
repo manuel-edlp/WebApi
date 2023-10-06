@@ -15,5 +15,12 @@ namespace WebApi.Data
         }
 
         public DbSet<VideoJuego> VideoJuego => Set<VideoJuego>();
+        public DbSet<Desarrollador> Desarrollador => Set<Desarrollador>();
     }
 }
+/* 
+ comando para migraciones: 
+ dotnet ef migrations add migration
+ dotnet ef database update  
+
+*/

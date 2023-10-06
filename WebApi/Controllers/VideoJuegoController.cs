@@ -92,14 +92,14 @@ namespace WebApi.Controllers
         }
 
         [HttpPatch("{id}")] // Modifica el nombre de un videojuego por ID
-        public async Task<IActionResult> ModificarNombre(int id, [FromBody] JsonPatchDocument<VideoJuego> jsonPatch)
+        public async Task<IActionResult> Modificar(int id, [FromBody] JsonPatchDocument<VideoJuego> jsonPatch)
         {
             if (jsonPatch == null)
             {
-                return BadRequest("El nuevo nombre no es válido.");
+                return BadRequest("Los datos no son válidos.");
             }
 
-            if (await _videoJuegoService.ModificarNombre(id, jsonPatch))
+            if (await _videoJuegoService.Modificar(id, jsonPatch))
             {
                 // Devuelvo una respuesta de éxito con código 200 (OK)
                 return Ok();
