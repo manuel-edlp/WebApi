@@ -41,17 +41,17 @@ namespace WebApi.Controllers
 
         [HttpPost] // agrega videojuego
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(VideoJuego))]
-        public async Task<IActionResult> AgregarVideoJuego([FromBody] VideoJuego videojuego)
+        public async Task<IActionResult> AgregarVideoJuego([FromBody] VideoJuegoDto videojuegodto)
         {
-            if (videojuego == null)
+            if (videojuegodto == null)
             {
                 return BadRequest("Los datos del videojuego no son válidos.");
             }
 
-            if (await _videoJuegoService.AgregarVideoJuego(videojuego))
+            if (await _videoJuegoService.AgregarVideoJuego(videojuegodto))
             {
                 // Devuelvo una respuesta de éxito con el código de estado 201 (Created)
-                return CreatedAtAction("GetNombre", new { id = videojuego.id }, videojuego);
+                return CreatedAtAction("GetNombre", new { id = videojuegodto.nombre }, videojuegodto);
             }
             else
             {
@@ -107,7 +107,7 @@ namespace WebApi.Controllers
             else
             {
                 // Si la modificación falla o el videojuego no existe, devuelve NotFound
-                return NotFound("El videojuego no se encuentra en el sistema.");
+                return NotFound("Fallo en la modificacion.");
             }
         }
     }

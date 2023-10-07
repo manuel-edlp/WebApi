@@ -17,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Controllers;
 using AutoMapper;
 using WebApi.Services;
+using WebApi.Models;
+using WebApi.Dtos;
 
 namespace WebApi
 {
@@ -28,6 +30,19 @@ namespace WebApi
         }
 
         public IConfiguration Configuration { get; }
+
+        public class MappingProfile : Profile
+        {
+            public MappingProfile()
+            {
+                CreateMap<VideoJuego, VideoJuegoDto>()
+                    .ForMember(dto => dto.desarrollador, opt => opt.MapFrom(src => src.desarrollador.nombre));
+                CreateMap<VideoJuegoDto, VideoJuego>()
+                    .ForMember(dest => dest.desarrollador, opt => opt.Ignore()); // Ignora la propiedad de navegación para evitar problemas de seguimiento de Entity Framework
+
+
+            }
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

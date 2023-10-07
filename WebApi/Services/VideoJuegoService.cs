@@ -9,6 +9,7 @@ using WebApi.Data;
 using WebApi.Dtos;
 using WebApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Services
 {
@@ -49,7 +50,9 @@ namespace WebApi.Services
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos()
         {
             // Realiza una consulta a la base de datos para devolver todos los videojuegos
-            var videojuegos = await _context.VideoJuego.ToListAsync();
+            var videojuegos = await _context.VideoJuego
+                .Include(v => v.desarrollador)
+                .ToListAsync();
 
             var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
 
@@ -60,7 +63,9 @@ namespace WebApi.Services
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosAño(int año)
         {
             // Realiza una consulta a la base de datos para devolver todos los videojuegos de un año determinado
-            var videojuegos = await _context.VideoJuego.Where(v => v.año == año).ToListAsync();
+            var videojuegos = await _context.VideoJuego.Where(v => v.año == año)
+                .Include(v => v.desarrollador)
+                .ToListAsync();
 
             var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
 
@@ -70,35 +75,55 @@ namespace WebApi.Services
 
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(string desarrollador)
         {
-            // Realiza una consulta a la base de datos para devolver todos los videojuegos de un desarrollador determinado
-            var videojuegos = await _context.VideoJuego.Where(v => v.desarrollador.nombre == desarrollador).ToListAsync();
-
+            // Realizo una consulta a la base de datos para devolver todos los videojuegos de un desarrollador determinado
+            var videojuegos = await _context.VideoJuego.Where(v => v.desarrollador.nombre == desarrollador)
+                .Include(v => v.desarrollador)
+                .ToListAsync();
+            
             var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
 
-            // Devuelve la lista de videojuegos del año determinado
+            // Devuelvo la lista de videojuegos del año determinado
             return videojuegosdto;
         }
 
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(float peso)
         {
-            // Realiza una consulta a la base de datos para devolver todos los videojuegos de un año determinado
-            var videojuegos = await _context.VideoJuego.Where(v => v.peso <= peso).ToListAsync();
+            // Realizo una consulta a la base de datos para devolver todos los videojuegos de un año determinado
+            var videojuegos = await _context.VideoJuego.Where(v => v.peso <= peso)
+                .Include(v => v.desarrollador)
+                .ToListAsync();
 
             var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
 
-            // Devuelve la lista de videojuegos del año determinado
+            // Devuelvo la lista de videojuegos del año determinado
             return videojuegosdto;
         }
 
 
-        public async Task<bool> AgregarVideoJuego(VideoJuego videojuego)
+        public async Task<bool> AgregarVideoJuego(VideoJuegoDto videojuegodto)
         {
             try
             {
-                if (videojuego == null)
+                if (videojuegodto == null)
                 {
                     return false;
                 }
+
+                // Verifico si el desarrollador ya existe en la base de datos
+                Desarrollador desarrollador = await _context.Desarrollador
+                    .FirstOrDefaultAsync(d => d.nombre == videojuegodto.desarrollador);
+
+                if (desarrollador == null)
+                {
+                    // Si el desarrollador no existe lo creo
+                    desarrollador = new Desarrollador { nombre = videojuegodto.desarrollador };
+                    _context.Desarrollador.Add(desarrollador);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Crea el VideoJuego y asigna el id del desarrollador
+                var videojuego = _mapper.Map<VideoJuego>(videojuegodto);
+                videojuego.desarrolladorId = desarrollador.desarrolladorId;
 
                 // Agregar el videojuego al contexto de la base de datos
                 _context.VideoJuego.Add(videojuego);
