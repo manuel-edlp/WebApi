@@ -165,20 +165,33 @@ namespace WebApi.Services
                 return false;
             }
         }
-        public async Task<bool> ModificarVideoJuego(VideoJuego videoJuegoNuevo,int id)
+        public async Task<bool> ModificarVideoJuego(VideoJuegoDto videoJuegoNuevoDto,int id)
         {
             try
             {
-                VideoJuego videojuego = await _context.VideoJuego.FindAsync(id);
+                var videojuego = _mapper.Map<VideoJuego>(videoJuegoNuevoDto);
+                videojuego = await _context.VideoJuego
+                    .Include(v => v.desarrollador)
+                    .FirstOrDefaultAsync(v => v.id == id);
+
                 if (videojuego == null) // verifico que se encuentre el videojuego
                 {
                     return false;
                 }
 
-                videojuego.nombre = videoJuegoNuevo.nombre;
-                videojuego.año = videoJuegoNuevo.año;
-                videojuego.desarrollador = videoJuegoNuevo.desarrollador;
-                videojuego.peso = videoJuegoNuevo.peso;
+                var desarrollador = await _context.Desarrollador
+                    .Where(d => d.nombre == videoJuegoNuevoDto.desarrollador)
+                    .FirstOrDefaultAsync();
+
+                if (desarrollador == null)
+                {
+                    return false;
+                }
+
+                videojuego.nombre = videoJuegoNuevoDto.nombre;
+                videojuego.año = videoJuegoNuevoDto.año;
+                videojuego.desarrolladorId = desarrollador.desarrolladorId;
+                videojuego.peso = videoJuegoNuevoDto.peso;
 
                 await _context.SaveChangesAsync();  // actualizo bd
 
@@ -192,10 +205,11 @@ namespace WebApi.Services
             }
         }
 
-        public async Task<bool> Modificar(int id, JsonPatchDocument<VideoJuego> jsonPatch)
+        public async Task<bool> Modificar(int id, JsonPatchDocument<VideoJuegoDto> jsonPatch)
         {
             try
             {
+               
                 // Buscar el videojuego por ID
                 var videojuego = await _context.VideoJuego.FindAsync(id);
 
@@ -204,7 +218,11 @@ namespace WebApi.Services
                 {
                     return false;
                 }
-                jsonPatch.ApplyTo(videojuego);
+                var videojuegoDto = _mapper.Map<VideoJuegoDto>(videojuego);
+                jsonPatch.ApplyTo(videojuegoDto);
+
+                _mapper.Map(videojuegoDto, videojuego); 
+
                 await _context.SaveChangesAsync();  // actualizo bd
                 return true;
 

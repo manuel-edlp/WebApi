@@ -77,14 +77,14 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("{id}")] // modifico un videojuego completo por id
-        public async Task <IActionResult> ModificarVideoJuego([FromBody] VideoJuego videoJuegoNuevo, int id)
+        public async Task <IActionResult> ModificarVideoJuego([FromBody] VideoJuegoDto videoJuegoNuevoDto, int id)
         {
-            if (videoJuegoNuevo == null) // verifico que los datos no esten vacios
+            if (videoJuegoNuevoDto == null) // verifico que los datos no esten vacios
             {
                 return BadRequest("Datos del videojuego inválidos");
             }
 
-            if (await _videoJuegoService.ModificarVideoJuego(videoJuegoNuevo, id)) // verifico si se modifica exitosamente
+            if (await _videoJuegoService.ModificarVideoJuego(videoJuegoNuevoDto, id)) // verifico si se modifica exitosamente
             {
                 return Ok(); // retorno codigo 200 por modificacion exitosa
             }
@@ -92,7 +92,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPatch("{id}")] // Modifica el nombre de un videojuego por ID
-        public async Task<IActionResult> Modificar(int id, [FromBody] JsonPatchDocument<VideoJuego> jsonPatch)
+        public async Task<IActionResult> Modificar(int id, [FromBody] JsonPatchDocument<VideoJuegoDto> jsonPatch)
         {
             if (jsonPatch == null)
             {
