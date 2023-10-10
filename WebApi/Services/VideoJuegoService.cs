@@ -9,12 +9,11 @@ using WebApi.Data;
 using WebApi.Dtos;
 using WebApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
-using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Services
 {
-    
-    public class VideoJuegoService
+
+    public class VideoJuegoService : IVideoJuegoService
     {
         private readonly ApiDb _context;
         private readonly IMapper _mapper;
@@ -35,16 +34,22 @@ namespace WebApi.Services
         }
 
 
-        public string GetNombre(int id)  // falta manejar que retorna si no lo encuentra
+        public async Task<string> GetNombre(int id)  // falta manejar que retorna si no lo encuentra
         {
 
             // Obtén el videojuego de la base de datos
-            var videojuego = _context.VideoJuego.FirstOrDefault(v => v.id == id);
+            var videojuego = await _context.VideoJuego.FirstOrDefaultAsync(v => v.id == id);
 
-            var videojuegodto = _mapper.Map<VideoJuegoDto>(videojuego);
-
-            // Devuelve el nombre del videojuego
-            return videojuegodto.nombre;
+            if (videojuego == null)
+            {
+                return "null";
+            }
+            else
+            {
+                var videojuegodto = _mapper.Map<VideoJuegoDto>(videojuego);
+                // Devuelve el nombre del videojuego
+                return videojuegodto.nombre;
+            }
         }
 
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos()
@@ -73,13 +78,13 @@ namespace WebApi.Services
             return videojuegosdto;
         }
 
-        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(string desarrollador)
+        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(string desarrollador)
         {
             // Realizo una consulta a la base de datos para devolver todos los videojuegos de un desarrollador determinado
             var videojuegos = await _context.VideoJuego.Where(v => v.desarrollador.nombre == desarrollador)
                 .Include(v => v.desarrollador)
                 .ToListAsync();
-            
+
             var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
 
             // Devuelvo la lista de videojuegos del año determinado
@@ -165,7 +170,7 @@ namespace WebApi.Services
                 return false;
             }
         }
-        public async Task<bool> ModificarVideoJuego(VideoJuegoDto videoJuegoNuevoDto,int id)
+        public async Task<bool> ModificarVideoJuego(VideoJuegoDto videoJuegoNuevoDto, int id)
         {
             try
             {
@@ -209,7 +214,7 @@ namespace WebApi.Services
         {
             try
             {
-               
+
                 // Buscar el videojuego por ID
                 var videojuego = await _context.VideoJuego.FindAsync(id);
 
@@ -221,7 +226,7 @@ namespace WebApi.Services
                 var videojuegoDto = _mapper.Map<VideoJuegoDto>(videojuego);
                 jsonPatch.ApplyTo(videojuegoDto);
 
-                _mapper.Map(videojuegoDto, videojuego); 
+                _mapper.Map(videojuegoDto, videojuego);
 
                 await _context.SaveChangesAsync();  // actualizo bd
                 return true;

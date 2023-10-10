@@ -24,7 +24,16 @@ namespace WebApi.Controllers
 
 
         [HttpGet("{id}")] // Buscar Videojuego por id
-        public string GetNombre(int id) => _videoJuegoService.GetNombre(id);
+        public async Task<IActionResult> GetNombre(int id) 
+        {
+            var nombre = await _videoJuegoService.GetNombre(id);
+            if (nombre == "null")
+            {
+                return NotFound(new { message = $"El videojuego con id {id} no existe"});
+            }
+            else return Ok(nombre);
+            
+        } 
 
 
         [HttpGet("año/{año}")] // Listar videojuegos por año
@@ -32,11 +41,11 @@ namespace WebApi.Controllers
 
 
         [HttpGet("desarrollador/{desarrollador}")] // Listar videojuegos por desarrollador
-        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(string desarrollador) => await _videoJuegoService.GetAllVideoJuegosDesarrollador(desarrollador);
+        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(string desarrollador) => await _videoJuegoService.GetAllVideoJuegosPeso(desarrollador);
 
 
         [HttpGet("peso/{peso}")] // Listar videojuegos por por peso menor o igual a un peso determinado
-        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(float peso) => await _videoJuegoService.GetAllVideoJuegosDesarrollador(peso);
+        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(float peso) => await _videoJuegoService.GetAllVideoJuegosDesarrollador(peso);
 
 
         [HttpPost] // agrega videojuego
@@ -56,7 +65,7 @@ namespace WebApi.Controllers
             else
             {
                 // Retorno respuesta de fallo del servidor con el codigo 500
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, "Videojuego no creado, error interno del servidor.");
             }
         }
 
@@ -66,13 +75,13 @@ namespace WebApi.Controllers
         {
             if (await _videoJuegoService.EliminarVideoJuego(id))
             {
-                // Devuelvo una respuesta de éxito
+                // Devuelvo una respuesta de éxito al eliminar
                 return NoContent(); // Código 204 (Sin contenido)
             }
             else
             {
                 // Si la eliminación falla o el videojuego no existe, devuelvo NotFound
-                return NotFound();
+                return NotFound($"Fallo al eliminar,videojuego con id {id} no encontrado");
             }
         }
 
@@ -106,7 +115,7 @@ namespace WebApi.Controllers
             }
             else
             {
-                // Si la modificación falla o el videojuego no existe, devuelve NotFound
+                // Si la modificación falla o el videojuego no existe, devuelvo NotFound
                 return NotFound("Fallo en la modificacion.");
             }
         }
