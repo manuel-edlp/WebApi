@@ -34,7 +34,7 @@ namespace WebApi.Services
         }
 
 
-        public async Task<string> GetNombre(int id)  // falta manejar que retorna si no lo encuentra
+        public async Task<string> GetNombre(int id)
         {
 
             // Obtén el videojuego de la base de datos
@@ -46,7 +46,7 @@ namespace WebApi.Services
             }
             else
             {
-                var videojuegodto = _mapper.Map<VideoJuegoDto>(videojuego);
+                var videojuegodto = _mapper.Map<VideoJuegoNombreDto>(videojuego);
                 // Devuelve el nombre del videojuego
                 return videojuegodto.nombre;
             }
