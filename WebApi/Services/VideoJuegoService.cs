@@ -19,15 +19,9 @@ namespace WebApi.Services
         private readonly IMapper _mapper;
 
 
-        public VideoJuegoService(IConfiguration configuration, IMapper mapper)
+        public VideoJuegoService(IConfiguration configuration, IMapper mapper,ApiDb context)
         {
-            var connectionString = configuration.GetConnectionString("PostgreSQLConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<ApiDb>();
-
-            optionsBuilder.UseNpgsql(connectionString);
-
-            _context = new ApiDb(optionsBuilder.Options);
+            _context = context;
 
             _mapper = mapper;
 
