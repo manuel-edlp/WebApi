@@ -49,7 +49,13 @@ namespace WebApi
             
             // registro el servicio videojuegos para poder inyectarlo en mi videojuego controller
             services.AddScoped<VideoJuegoService>();
-      
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    policy => policy.AllowAnyOrigin());
+            });
+
 
             // Configuración de AutoMapper
             services.AddAutoMapper(typeof(Startup));
@@ -76,10 +82,14 @@ namespace WebApi
 
             app.UseAuthorization();
 
+            app.UseCors("AllowAllOrigins");
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            
         }
     }
 }
