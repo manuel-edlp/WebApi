@@ -53,7 +53,11 @@ namespace WebApi
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
-                    policy => policy.AllowAnyOrigin());
+                policy => policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+
             });
 
 
@@ -76,13 +80,15 @@ namespace WebApi
                 // interfaz grafica de swagger: https://localhost:5001/swagger/index.html
             }
 
+            app.UseCors("AllowAllOrigins");
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseCors("AllowAllOrigins");
+            
 
             app.UseEndpoints(endpoints =>
             {
