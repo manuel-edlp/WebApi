@@ -56,7 +56,19 @@ namespace WebApi.Services
             // Devuelve la lista de videojuegos
             return videoJuegosNombreDto;
         }
-    
+
+        public async Task<IEnumerable<VideoJuegoNombreDto>> BuscarVideoJuegos(string busqueda)
+        {
+            // Realiza la búsqueda de videojuegos por nombre
+            var videojuegos = await _context.VideoJuego
+               .Where(v => v.nombre.ToLower().Contains(busqueda.ToLower()))
+               .ToListAsync();
+
+            var videoJuegosNombreDto = _mapper.Map<List<VideoJuegoNombreDto>>(videojuegos);
+
+            return videoJuegosNombreDto;
+
+        }
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos()
         {
             // Realiza una consulta a la base de datos para devolver todos los videojuegos

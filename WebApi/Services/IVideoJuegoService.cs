@@ -11,6 +11,7 @@ namespace WebApi.Services
         Task<bool> EliminarVideoJuego(int id);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos();
         Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres();
+        Task<IEnumerable<VideoJuegoNombreDto>> BuscarVideoJuegos(string busqueda);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosAño(int año);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(float peso);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(string desarrollador);

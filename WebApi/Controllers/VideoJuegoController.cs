@@ -27,17 +27,21 @@ namespace WebApi.Controllers
 
 
         [HttpGet("{id}")] // Buscar Videojuego por id
-        public async Task<IActionResult> GetNombreById(int id) 
+        public async Task<IActionResult> GetNombreById(int id)
         {
             var nombre = await _videoJuegoService.GetNombreById(id);
             if (nombre == "null")
             {
-                return NotFound(new { message = $"El videojuego con id {id} no existe"});
+                return NotFound(new { message = $"El videojuego con id {id} no existe" });
             }
             else return Ok(nombre);
-            
-        } 
 
+        }
+
+
+        [HttpGet("buscar/{busqueda}")]
+        public async Task<IEnumerable<VideoJuegoNombreDto>> BuscarVideoJuegos(string busqueda) => await _videoJuegoService.BuscarVideoJuegos(busqueda);
+     
 
         [HttpGet("año/{año}")] // Listar videojuegos por año
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosAño(int año) => await _videoJuegoService.GetAllVideoJuegosAño(año);
