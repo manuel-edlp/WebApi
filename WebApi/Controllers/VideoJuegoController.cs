@@ -22,11 +22,14 @@ namespace WebApi.Controllers
         [HttpGet] // Listar Videojuegos
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos() => await _videoJuegoService.GetAllVideoJuegos();
 
+        [HttpGet("nombres")] // Listar nombres de Videojuegos
+        public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres() => await _videoJuegoService.GetAllNombres();
+
 
         [HttpGet("{id}")] // Buscar Videojuego por id
-        public async Task<IActionResult> GetNombre(int id) 
+        public async Task<IActionResult> GetNombreById(int id) 
         {
-            var nombre = await _videoJuegoService.GetNombre(id);
+            var nombre = await _videoJuegoService.GetNombreById(id);
             if (nombre == "null")
             {
                 return NotFound(new { message = $"El videojuego con id {id} no existe"});

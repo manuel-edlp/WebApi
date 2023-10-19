@@ -10,10 +10,11 @@ namespace WebApi.Services
         Task<bool> AgregarVideoJuego(VideoJuegoDto videojuegodto);
         Task<bool> EliminarVideoJuego(int id);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos();
+        Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres();
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosAño(int año);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(float peso);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(string desarrollador);
-        Task<string> GetNombre(int id);
+        Task<string> GetNombreById(int id);
         Task<bool> Modificar(int id, JsonPatchDocument<VideoJuegoDto> jsonPatch);
         Task<bool> ModificarVideoJuego(VideoJuegoDto videoJuegoNuevoDto, int id);
     }

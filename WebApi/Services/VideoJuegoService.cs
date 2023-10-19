@@ -28,7 +28,7 @@ namespace WebApi.Services
         }
 
 
-        public async Task<string> GetNombre(int id)
+        public async Task<string> GetNombreById(int id)
         {
 
             // Obtén el videojuego de la base de datos
@@ -40,12 +40,23 @@ namespace WebApi.Services
             }
             else
             {
-                var videojuegodto = _mapper.Map<VideoJuegoNombreDto>(videojuego);
+                var videoJuegoNombreDto = _mapper.Map<VideoJuegoNombreDto>(videojuego);
                 // Devuelve el nombre del videojuego
-                return videojuegodto.nombre;
+                return videoJuegoNombreDto.nombre;
             }
         }
 
+        public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres()
+        {
+            // Realiza una consulta a la base de datos para devolver todos los videojuegos
+            var videojuegos = await _context.VideoJuego.ToListAsync();
+
+            var videoJuegosNombreDto = _mapper.Map<List<VideoJuegoNombreDto>>(videojuegos);
+
+            // Devuelve la lista de videojuegos
+            return videoJuegosNombreDto;
+        }
+    
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos()
         {
             // Realiza una consulta a la base de datos para devolver todos los videojuegos
