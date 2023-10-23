@@ -8,7 +8,7 @@ namespace WebApi.Services
     public interface IVideoJuegoService
     {
         Task<bool> AgregarVideoJuego(VideoJuegoDto videojuegodto);
-        Task<bool> EliminarVideoJuego(int id);
+        Task<bool> EliminarVideoJuego(string nombre);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos();
         Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres();
         Task<IEnumerable<VideoJuegoNombreDto>> BuscarVideoJuegos(string busqueda);

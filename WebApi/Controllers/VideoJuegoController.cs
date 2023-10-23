@@ -67,7 +67,7 @@ namespace WebApi.Controllers
             if (await _videoJuegoService.AgregarVideoJuego(videojuegodto))
             {
                 // Devuelvo una respuesta de éxito con el código de estado 201 (Created)
-                return CreatedAtAction("GetNombre", new { id = videojuegodto.nombre }, videojuegodto);
+                return CreatedAtAction("GetNombreById", new { id = videojuegodto.nombre }, videojuegodto);
             }
             else
             {
@@ -77,10 +77,10 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpDelete("{id}")] // elimina videojuego
-        public async Task <IActionResult> EliminarVideoJuego(int id)
+        [HttpDelete("{nombre}")] // elimina videojuego
+        public async Task <IActionResult> EliminarVideoJuego(string nombre)
         {
-            if (await _videoJuegoService.EliminarVideoJuego(id))
+            if (await _videoJuegoService.EliminarVideoJuego(nombre))
             {
                 // Devuelvo una respuesta de éxito al eliminar
                 return NoContent(); // Código 204 (Sin contenido)
@@ -88,7 +88,7 @@ namespace WebApi.Controllers
             else
             {
                 // Si la eliminación falla o el videojuego no existe, devuelvo NotFound
-                return NotFound($"Fallo al eliminar,videojuego con id {id} no encontrado");
+                return NotFound($"Fallo al eliminar,videojuego con nombre {nombre} no encontrado");
             }
         }
 

@@ -161,12 +161,13 @@ namespace WebApi.Services
             }
         }
 
-        public async Task<bool> EliminarVideoJuego(int id)
+        public async Task<bool> EliminarVideoJuego(string nombre)
         {
             try
             {
                 // Obtener el videojuego del contexto de la base de datos
-                VideoJuego videojuego = await _context.VideoJuego.FindAsync(id);
+                VideoJuego videojuego = await _context.VideoJuego
+                 .FirstOrDefaultAsync(v => v.nombre == nombre);
 
                 // Si el videojuego no existe, devuelve falso
                 if (videojuego == null)
