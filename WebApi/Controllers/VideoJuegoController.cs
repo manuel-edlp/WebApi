@@ -26,21 +26,21 @@ namespace WebApi.Controllers
         public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres() => await _videoJuegoService.GetAllNombres();
 
 
-        [HttpGet("{id}")] // Buscar Videojuego por id
-        public async Task<IActionResult> GetNombreById(int id)
+        [HttpGet("{nombre}")] // Buscar Videojuego por nombre
+        public async Task<IActionResult> GetVideoJuegoByNombre(string nombre)
         {
-            var nombre = await _videoJuegoService.GetNombreById(id);
-            if (nombre == "null")
+            var videojuego = await _videoJuegoService.GetVideoJuegoByNombre(nombre);
+            if (videojuego == null)
             {
-                return NotFound(new { message = $"El videojuego con id {id} no existe" });
+                return NotFound(new { message = $"El videojuego con nombre {nombre} no existe" });
             }
-            else return Ok(nombre);
+            else return Ok(videojuego);
 
         }
 
 
-        [HttpGet("buscar/{busqueda}")]
-        public async Task<IEnumerable<VideoJuegoNombreDto>> BuscarVideoJuegos(string busqueda) => await _videoJuegoService.BuscarVideoJuegos(busqueda);
+        [HttpGet("buscar/{busqueda}")] // Listar nombres de videojuegos buscando por nombre
+        public async Task<IEnumerable<VideoJuegoNombreDto>> BuscarNombresVideoJuegos(string busqueda) => await _videoJuegoService.BuscarNombresVideoJuegos(busqueda);
      
 
         [HttpGet("año/{año}")] // Listar videojuegos por año
@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(string desarrollador) => await _videoJuegoService.GetAllVideoJuegosPeso(desarrollador);
 
 
-        [HttpGet("peso/{peso}")] // Listar videojuegos por por peso menor o igual a un peso determinado
+        [HttpGet("peso/{peso}")] // Listar videojuegos por peso menor o igual a un peso determinado
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(float peso) => await _videoJuegoService.GetAllVideoJuegosDesarrollador(peso);
 
 
@@ -92,15 +92,15 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpPut("{id}")] // modifico un videojuego completo por id
-        public async Task <IActionResult> ModificarVideoJuego([FromBody] VideoJuegoDto videoJuegoNuevoDto, int id)
+        [HttpPut("{nombre}")] // modifico un videojuego completo por nombre
+        public async Task <IActionResult> ModificarVideoJuego([FromBody] VideoJuegoDto videoJuegoNuevoDto, string nombre)
         {
             if (videoJuegoNuevoDto == null) // verifico que los datos no esten vacios
             {
                 return BadRequest("Datos del videojuego inválidos");
             }
 
-            if (await _videoJuegoService.ModificarVideoJuego(videoJuegoNuevoDto, id)) // verifico si se modifica exitosamente
+            if (await _videoJuegoService.ModificarVideoJuego(videoJuegoNuevoDto, nombre)) // verifico si se modifica exitosamente
             {
                 return Ok(); // retorno codigo 200 por modificacion exitosa
             }

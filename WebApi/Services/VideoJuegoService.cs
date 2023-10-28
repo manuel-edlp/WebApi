@@ -28,22 +28,18 @@ namespace WebApi.Services
         }
 
 
-        public async Task<string> GetNombreById(int id)
+        public async Task<VideoJuegoDto> GetVideoJuegoByNombre(string nombre)
         {
+            // Realiza la búsqueda de videojuego por nombre
+            var videojuego = await _context.VideoJuego
+               .Include(v => v.desarrollador)
+               .FirstOrDefaultAsync(v => v.nombre == nombre);
+               
+               
 
-            // Obtén el videojuego de la base de datos
-            var videojuego = await _context.VideoJuego.FirstOrDefaultAsync(v => v.id == id);
+            var videoJuegoDto = _mapper.Map<VideoJuegoDto>(videojuego);
 
-            if (videojuego == null)
-            {
-                return "null";
-            }
-            else
-            {
-                var videoJuegoNombreDto = _mapper.Map<VideoJuegoNombreDto>(videojuego);
-                // Devuelve el nombre del videojuego
-                return videoJuegoNombreDto.nombre;
-            }
+            return videoJuegoDto;
         }
 
         public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres()
@@ -57,7 +53,7 @@ namespace WebApi.Services
             return videoJuegosNombreDto;
         }
 
-        public async Task<IEnumerable<VideoJuegoNombreDto>> BuscarVideoJuegos(string busqueda)
+        public async Task<IEnumerable<VideoJuegoNombreDto>> BuscarNombresVideoJuegos(string busqueda)
         {
             // Realiza la búsqueda de videojuegos por nombre
             var videojuegos = await _context.VideoJuego
@@ -188,14 +184,14 @@ namespace WebApi.Services
                 return false;
             }
         }
-        public async Task<bool> ModificarVideoJuego(VideoJuegoDto videoJuegoNuevoDto, int id)
+        public async Task<bool> ModificarVideoJuego(VideoJuegoDto videoJuegoNuevoDto, string nombre)
         {
             try
             {
                 var videojuego = _mapper.Map<VideoJuego>(videoJuegoNuevoDto);
                 videojuego = await _context.VideoJuego
                     .Include(v => v.desarrollador)
-                    .FirstOrDefaultAsync(v => v.id == id);
+                    .FirstOrDefaultAsync(v => v.nombre == nombre);
 
                 if (videojuego == null) // verifico que se encuentre el videojuego
                 {
