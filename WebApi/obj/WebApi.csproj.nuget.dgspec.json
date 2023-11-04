@@ -44,6 +44,10 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "App.Metrics": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
             "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
               "version": "[5.0.1, )"
@@ -92,9 +96,33 @@
               "target": "Package",
               "version": "[5.0.10, )"
             },
+            "Prometheus.Client": {
+              "target": "Package",
+              "version": "[5.2.0, )"
+            },
+            "Prometheus.Client.AspNetCore": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[5.6.3, )"
+            },
+            "prometheus-net": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "prometheus-net.AspNetCore": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "prometheus-net.DotNetRuntime": {
+              "target": "Package",
+              "version": "[4.4.0, )"
+            },
+            "prometheus-net.SystemMetrics": {
+              "target": "Package",
+              "version": "[2.0.0, )"
             }
           },
           "imports": [

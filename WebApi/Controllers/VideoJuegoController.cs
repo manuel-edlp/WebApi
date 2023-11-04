@@ -6,6 +6,8 @@ using WebApi.Dtos;
 using Microsoft.AspNetCore.Http;
 using WebApi.Services;
 using Microsoft.AspNetCore.JsonPatch;
+using Prometheus;
+using System.Diagnostics;
 
 namespace WebApi.Controllers
 {
@@ -18,9 +20,30 @@ namespace WebApi.Controllers
         {
             _videoJuegoService = videoJuegoService;
         }
+        // Crear un contador para las solicitudes recibidas en tu endpoint
+        private static readonly Counter solicitudesRecibidasCounter = Metrics.CreateCounter(
+            "solicitudes_recibidas", "Cantidad de solicitudes recibidas en el endpoint listar videojuegos");
+        // Crear un histograma para el tiempo de ejecución del endpoint
+        private static readonly Histogram tiempoEjecucionHistogram = Metrics.CreateHistogram(
+            "tiempo_ejecucion_endpoint",
+            "Tiempo de ejecución del endpoint GetAllVideoJuegos"
+        );
 
         [HttpGet] // Listar Videojuegos
-        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos() => await _videoJuegoService.GetAllVideoJuegos();
+        public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos(){
+            solicitudesRecibidasCounter.Inc();  // Incrementar el contador de solicitudes recibidas
+            var stopwatch = Stopwatch.StartNew(); // Iniciar el cronómetro
+
+            var resultados = await _videoJuegoService.GetAllVideoJuegos();
+
+            stopwatch.Stop(); // Detener el cronómetro
+
+            var tiempoTranscurrido = stopwatch.Elapsed.TotalSeconds; // Obtener el tiempo transcurrido
+
+            tiempoEjecucionHistogram.Observe(tiempoTranscurrido); // Registrar la duración en el histograma
+
+            return resultados;
+            }
 
         [HttpGet("nombres")] // Listar nombres de Videojuegos
         public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres() => await _videoJuegoService.GetAllNombres();

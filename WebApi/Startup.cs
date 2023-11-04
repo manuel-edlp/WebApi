@@ -1,20 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using WebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using WebApi.Services;
 using WebApi.Models;
 using WebApi.Dtos;
+using Prometheus;
+using Microsoft.OpenApi.Models;
 
 namespace WebApi
 {
@@ -80,19 +76,27 @@ namespace WebApi
                 // interfaz grafica de swagger: https://localhost:5001/swagger/index.html
             }
 
+            
             app.UseCors("AllowAllOrigins");
+
 
             app.UseHttpsRedirection();
 
+            app.UseHttpMetrics(); // captura métricas relacionadas con las solicitudes HTTP
+      
+
             app.UseRouting();
+            
+            
 
             app.UseAuthorization();
 
-            
+
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMetrics(); // habilita un punto de acceso para la recopilación y exposición de todas las métricas generadas
             });
 
             
