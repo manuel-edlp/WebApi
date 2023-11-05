@@ -75,5 +75,20 @@ namespace WebApi.Controllers
                 return NotFound($"Fallo al eliminar desarrollador con nombre {nombre}");
             }
         }
+
+        [HttpPut("{nombre}")] // modifico un desarrollador completo por nombre
+        public async Task<IActionResult> ModificarDesarrollador([FromBody] DesarrolladorDto desarrolladorNuevoDto, string nombre)
+        {
+            if (desarrolladorNuevoDto == null) // verifico que los datos no esten vacios
+            {
+                return BadRequest("Dato del desarrollador inválido");
+            }
+
+            if (await _desarrolladorService.ModificarDesarrollador(desarrolladorNuevoDto, nombre)) // verifico si se modifica exitosamente
+            {
+                return Ok(); // retorno codigo 200 por modificacion exitosa
+            }
+            else return NotFound("Fallo en la modificación");
+        }
     }
 }

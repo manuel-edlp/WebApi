@@ -21,7 +21,8 @@ namespace WebApi.Services
             _mapper = mapper;
 
         }
-        public async Task<IEnumerable<DesarrolladorDto>> GetAllDesarrolladores() {
+        public async Task<IEnumerable<DesarrolladorDto>> GetAllDesarrolladores()
+        {
             // Realiza una consulta a la base de datos para devolver todos los Desarrolladores
             var desarrolladores = await _context.Desarrollador.ToListAsync();
 
@@ -90,6 +91,29 @@ namespace WebApi.Services
                 await _context.SaveChangesAsync();
 
                 return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ModificarDesarrollador(DesarrolladorDto desarrolladorNuevoDto, string nombre)
+        {
+            try
+            {
+                var desarrollador = await _context.Desarrollador.FirstOrDefaultAsync(d => d.nombre.ToLower() == nombre.ToLower());
+
+                if (desarrollador == null) // verifico que se encuentre el desarrollador
+                {
+                    return false;
+                }
+
+                desarrollador.nombre = desarrolladorNuevoDto.nombre;
+
+                await _context.SaveChangesAsync();  // actualizo bd
+
+                return true;    // retorno modificacion exitosa
             }
             catch (Exception)
             {

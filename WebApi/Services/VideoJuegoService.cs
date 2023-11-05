@@ -187,8 +187,7 @@ namespace WebApi.Services
         {
             try
             {
-                var videojuego = _mapper.Map<VideoJuego>(videoJuegoNuevoDto);
-                videojuego = await _context.VideoJuego
+                var videojuego = await _context.VideoJuego
                     .Include(v => v.desarrollador)
                     .FirstOrDefaultAsync(v => v.nombre == nombre);
 
