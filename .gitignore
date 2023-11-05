@@ -33,9 +33,12 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
-WebApi/bin/
+WebApi/**/bin/
 /obj/
 /.vs/
+**/.vs/
+**/bin
+**/obj
 WebApi/**/.vs/
 WebApi/obj/
 
