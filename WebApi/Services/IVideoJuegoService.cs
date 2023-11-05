@@ -16,7 +16,7 @@ namespace WebApi.Services
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(float peso);
         Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(string desarrollador);
         Task<VideoJuegoDto> GetVideoJuegoByNombre(string nombre);
-        Task<bool> Modificar(int id, JsonPatchDocument<VideoJuegoDto> jsonPatch);
+        Task<bool> Modificar(string nombre, JsonPatchDocument<VideoJuegoDto> jsonPatch);
         Task<bool> ModificarVideoJuego(VideoJuegoDto videoJuegoNuevoDto, string nombre);
     }
 }

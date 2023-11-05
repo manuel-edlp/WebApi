@@ -43,8 +43,9 @@ namespace WebApi
             services.AddDbContext<ApiDb>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSQLConnection")));
             services.AddControllers().AddNewtonsoftJson();
             
-            // registro el servicio videojuegos para poder inyectarlo en mi videojuego controller
+            // registro los servicios para poder inyectarlo en mis controller
             services.AddScoped<VideoJuegoService>();
+            services.AddScoped<DesarrolladorService>();
 
             services.AddCors(options =>
             {

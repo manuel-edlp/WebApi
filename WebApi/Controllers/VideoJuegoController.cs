@@ -29,7 +29,7 @@ namespace WebApi.Controllers
             "Tiempo de ejecución del endpoint GetAllVideoJuegos"
         );
 
-        [HttpGet] // Listar Videojuegos
+        [HttpGet("listar")] // Listar Videojuegos
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos(){
             solicitudesRecibidasCounter.Inc();  // Incrementar el contador de solicitudes recibidas
             var stopwatch = Stopwatch.StartNew(); // Iniciar el cronómetro
@@ -45,11 +45,11 @@ namespace WebApi.Controllers
             return resultados;
             }
 
-        [HttpGet("nombres")] // Listar nombres de Videojuegos
+        [HttpGet("listarNombres")] // Listar nombres de Videojuegos
         public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres() => await _videoJuegoService.GetAllNombres();
 
 
-        [HttpGet("{nombre}")] // Buscar Videojuego por nombre
+        [HttpGet("buscar/{nombre}")] // Buscar Videojuego por nombre
         public async Task<IActionResult> GetVideoJuegoByNombre(string nombre)
         {
             var videojuego = await _videoJuegoService.GetVideoJuegoByNombre(nombre);
@@ -62,19 +62,19 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpGet("buscar/{busqueda}")] // Listar nombres de videojuegos buscando por nombre
+        [HttpGet("listar/{busqueda}")] // Listar nombres de videojuegos buscando por nombre
         public async Task<IEnumerable<VideoJuegoNombreDto>> BuscarNombresVideoJuegos(string busqueda) => await _videoJuegoService.BuscarNombresVideoJuegos(busqueda);
      
 
-        [HttpGet("año/{año}")] // Listar videojuegos por año
+        [HttpGet("listarPorAño/{año}")] // Listar videojuegos por año
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosAño(int año) => await _videoJuegoService.GetAllVideoJuegosAño(año);
 
 
-        [HttpGet("desarrollador/{desarrollador}")] // Listar videojuegos por desarrollador
+        [HttpGet("listarPorDesarrollador/{desarrollador}")] // Listar videojuegos por desarrollador
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosDesarrollador(string desarrollador) => await _videoJuegoService.GetAllVideoJuegosPeso(desarrollador);
 
 
-        [HttpGet("peso/{peso}")] // Listar videojuegos por peso menor o igual a un peso determinado
+        [HttpGet("listarPesoMenorIgual/{peso}")] // Listar videojuegos por peso menor o igual a un peso determinado
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(float peso) => await _videoJuegoService.GetAllVideoJuegosDesarrollador(peso);
 
 
@@ -90,7 +90,7 @@ namespace WebApi.Controllers
             if (await _videoJuegoService.AgregarVideoJuego(videojuegodto))
             {
                 // Devuelvo una respuesta de éxito con el código de estado 201 (Created)
-                return CreatedAtAction("GetNombreById", new { id = videojuegodto.nombre }, videojuegodto);
+                return CreatedAtAction("GetVideoJuegoByNombre", new { nombre = videojuegodto.nombre }, videojuegodto);
             }
             else
             {
@@ -130,15 +130,15 @@ namespace WebApi.Controllers
             else  return NotFound("Fallo en la modificación");
         }
 
-        [HttpPatch("{id}")] // Modifica el nombre de un videojuego por ID
-        public async Task<IActionResult> Modificar(int id, [FromBody] JsonPatchDocument<VideoJuegoDto> jsonPatch)
+        [HttpPatch("{nombre}")] // Modifica el nombre de un videojuego por ID
+        public async Task<IActionResult> Modificar(string nombre, [FromBody] JsonPatchDocument<VideoJuegoDto> jsonPatch)
         {
             if (jsonPatch == null)
             {
                 return BadRequest("Los datos no son válidos.");
             }
 
-            if (await _videoJuegoService.Modificar(id, jsonPatch))
+            if (await _videoJuegoService.Modificar(nombre, jsonPatch))
             {
                 // Devuelvo una respuesta de éxito con código 200 (OK)
                 return Ok();

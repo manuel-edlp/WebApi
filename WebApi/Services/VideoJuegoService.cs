@@ -33,7 +33,7 @@ namespace WebApi.Services
             // Realiza la búsqueda de videojuego por nombre
             var videojuego = await _context.VideoJuego
                .Include(v => v.desarrollador)
-               .FirstOrDefaultAsync(v => v.nombre == nombre);
+               .FirstOrDefaultAsync(v => v.nombre.ToLower() == nombre.ToLower());
                
                
 
@@ -47,7 +47,7 @@ namespace WebApi.Services
             // Realiza una consulta a la base de datos para devolver todos los videojuegos
             var videojuegos = await _context.VideoJuego.ToListAsync();
 
-            var videoJuegosNombreDto = _mapper.Map<List<VideoJuegoNombreDto>>(videojuegos);
+            var videoJuegosNombreDto = _mapper.Map<IEnumerable<VideoJuegoNombreDto>>(videojuegos);
 
             // Devuelve la lista de videojuegos
             return videoJuegosNombreDto;
@@ -60,7 +60,7 @@ namespace WebApi.Services
                .Where(v => v.nombre.ToLower().Contains(busqueda.ToLower()))
                .ToListAsync();
 
-            var videoJuegosNombreDto = _mapper.Map<List<VideoJuegoNombreDto>>(videojuegos);
+            var videoJuegosNombreDto = _mapper.Map<IEnumerable<VideoJuegoNombreDto>>(videojuegos);
 
             return videoJuegosNombreDto;
 
@@ -72,7 +72,7 @@ namespace WebApi.Services
                 .Include(v => v.desarrollador)
                 .ToListAsync();
 
-            var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
+            var videojuegosdto = _mapper.Map<IEnumerable<VideoJuegoDto>>(videojuegos);
 
             // Devuelve la lista de videojuegos
             return videojuegosdto;
@@ -85,7 +85,7 @@ namespace WebApi.Services
                 .Include(v => v.desarrollador)
                 .ToListAsync();
 
-            var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
+            var videojuegosdto = _mapper.Map<IEnumerable<VideoJuegoDto>>(videojuegos);
 
             // Devuelve la lista de videojuegos del año determinado
             return videojuegosdto;
@@ -94,11 +94,11 @@ namespace WebApi.Services
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegosPeso(string desarrollador)
         {
             // Realizo una consulta a la base de datos para devolver todos los videojuegos de un desarrollador determinado
-            var videojuegos = await _context.VideoJuego.Where(v => v.desarrollador.nombre == desarrollador)
+            var videojuegos = await _context.VideoJuego.Where(v => v.desarrollador.nombre.ToLower() == desarrollador.ToLower())
                 .Include(v => v.desarrollador)
                 .ToListAsync();
 
-            var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
+            var videojuegosdto = _mapper.Map<IEnumerable<VideoJuegoDto>>(videojuegos);
 
             // Devuelvo la lista de videojuegos del año determinado
             return videojuegosdto;
@@ -111,7 +111,7 @@ namespace WebApi.Services
                 .Include(v => v.desarrollador)
                 .ToListAsync();
 
-            var videojuegosdto = _mapper.Map<List<VideoJuegoDto>>(videojuegos);
+            var videojuegosdto = _mapper.Map<IEnumerable<VideoJuegoDto>>(videojuegos);
 
             // Devuelvo la lista de videojuegos del año determinado
             return videojuegosdto;
@@ -133,10 +133,9 @@ namespace WebApi.Services
 
                 if (desarrollador == null)
                 {
-                    // Si el desarrollador no existe lo creo
-                    desarrollador = new Desarrollador { nombre = videojuegodto.desarrollador };
-                    _context.Desarrollador.Add(desarrollador);
-                    await _context.SaveChangesAsync();
+                    // Si el desarrollador no existe cancelo el agregar
+                    return false;
+           
                 }
 
                 // Crea el VideoJuego y asigna el id del desarrollador
@@ -224,13 +223,13 @@ namespace WebApi.Services
             }
         }
 
-        public async Task<bool> Modificar(int id, JsonPatchDocument<VideoJuegoDto> jsonPatch)
+        public async Task<bool> Modificar(string nombre, JsonPatchDocument<VideoJuegoDto> jsonPatch)
         {
             try
             {
 
                 // Buscar el videojuego por ID
-                var videojuego = await _context.VideoJuego.FindAsync(id);
+                var videojuego = await _context.VideoJuego.FirstOrDefaultAsync(v => v.nombre == nombre);
 
                 // Si el videojuego no existe, devuelve false
                 if (videojuego == null)
