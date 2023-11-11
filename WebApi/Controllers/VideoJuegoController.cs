@@ -15,8 +15,8 @@ namespace WebApi.Controllers
     [Route("WebApi/[controller]")]
     public class VideoJuegoController : ControllerBase
     {
-        private readonly VideoJuegoService _videoJuegoService;
-        public VideoJuegoController(VideoJuegoService videoJuegoService)
+        private readonly IVideoJuegoService _videoJuegoService;
+        public VideoJuegoController(IVideoJuegoService videoJuegoService)
         {
             _videoJuegoService = videoJuegoService;
         }
@@ -31,7 +31,9 @@ namespace WebApi.Controllers
 
         [HttpGet("listar")] // Listar Videojuegos
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos(){
+
             solicitudesRecibidasCounter.Inc();  // Incrementar el contador de solicitudes recibidas
+
             var stopwatch = Stopwatch.StartNew(); // Iniciar el cronómetro
 
             var resultados = await _videoJuegoService.GetAllVideoJuegos();
@@ -125,7 +127,8 @@ namespace WebApi.Controllers
 
             if (await _videoJuegoService.ModificarVideoJuego(videoJuegoNuevoDto, nombre)) // verifico si se modifica exitosamente
             {
-                return Ok(); // retorno codigo 200 por modificacion exitosa
+                var videoJuegoModificadoDto = await _videoJuegoService.GetVideoJuegoByNombre(videoJuegoNuevoDto.nombre);
+                return Ok(videoJuegoModificadoDto);
             }
             else  return NotFound("Fallo en la modificación");
         }

@@ -44,7 +44,7 @@ namespace WebApi
             services.AddControllers().AddNewtonsoftJson();
             
             // registro los servicios para poder inyectarlo en mis controller
-            services.AddScoped<VideoJuegoService>();
+            services.AddScoped<IVideoJuegoService,VideoJuegoService>();
             services.AddScoped<DesarrolladorService>();
 
             services.AddCors(options =>
@@ -80,19 +80,13 @@ namespace WebApi
             
             app.UseCors("AllowAllOrigins");
 
-
             app.UseHttpsRedirection();
 
             app.UseHttpMetrics(); // captura métricas relacionadas con las solicitudes HTTP
-      
 
             app.UseRouting();
             
-            
-
             app.UseAuthorization();
-
-
 
             app.UseEndpoints(endpoints =>
             {
