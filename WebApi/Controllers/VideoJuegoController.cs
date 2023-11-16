@@ -6,8 +6,8 @@ using WebApi.Dtos;
 using Microsoft.AspNetCore.Http;
 using WebApi.Services;
 using Microsoft.AspNetCore.JsonPatch;
-using Prometheus;
 using System.Diagnostics;
+using Prometheus;
 
 namespace WebApi.Controllers
 {
@@ -20,35 +20,69 @@ namespace WebApi.Controllers
         {
             _videoJuegoService = videoJuegoService;
         }
-        // Crear un contador para las solicitudes recibidas en tu endpoint
-        private static readonly Counter solicitudesRecibidasCounter = Metrics.CreateCounter(
-            "solicitudes_recibidas", "Cantidad de solicitudes recibidas en el endpoint listar videojuegos");
-        // Crear un histograma para el tiempo de ejecución del endpoint
-        private static readonly Histogram tiempoEjecucionHistogram = Metrics.CreateHistogram(
-            "tiempo_ejecucion_endpoint",
-            "Tiempo de ejecución del endpoint GetAllVideoJuegos"
-        );
 
-        [HttpGet("listar")] // Listar Videojuegos
+
+
+
+
+
+
+        // Crear un contador para las solicitudes recibidas en tu endpoint
+        private static readonly Counter solicitudesRecibidasContador = Metrics.CreateCounter(
+            "solicitudes_recibidas", "Cantidad de solicitudes recibidas en el endpoint listar videojuegos");
+
+
+
+
+        [HttpGet("listar")] // Lista Videojuegos
         public async Task<IEnumerable<VideoJuegoDto>> GetAllVideoJuegos(){
 
-            solicitudesRecibidasCounter.Inc();  // Incrementar el contador de solicitudes recibidas
-
-            var stopwatch = Stopwatch.StartNew(); // Iniciar el cronómetro
+            solicitudesRecibidasContador.Inc();  // Incrementa el contador de solicitudes recibidas
 
             var resultados = await _videoJuegoService.GetAllVideoJuegos();
 
-            stopwatch.Stop(); // Detener el cronómetro
-
-            var tiempoTranscurrido = stopwatch.Elapsed.TotalSeconds; // Obtener el tiempo transcurrido
-
-            tiempoEjecucionHistogram.Observe(tiempoTranscurrido); // Registrar la duración en el histograma
-
             return resultados;
-            }
+        }
+
+
+
+
+
+
+
+
+
+
+        // Crear un histograma para el tiempo de ejecución del endpoint
+        private static readonly Histogram tiempoDeEjecucionHistograma = Metrics.CreateHistogram(
+            "tiempo_ejecucion_endpoint", "Tiempo de ejecución del endpoint GetAllVideoJuegos");
+
 
         [HttpGet("listarNombres")] // Listar nombres de Videojuegos
-        public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres() => await _videoJuegoService.GetAllNombres();
+        public async Task<IEnumerable<VideoJuegoNombreDto>> GetAllNombres()
+        {
+            var cronometro = Stopwatch.StartNew(); // Inicia el cronómetro
+
+            var resultados = await _videoJuegoService.GetAllNombres();
+
+            cronometro.Stop(); // Detiene el cronómetro
+
+            var tiempoTranscurrido = cronometro.Elapsed.TotalSeconds; // Obtiene el tiempo transcurrido
+
+            tiempoDeEjecucionHistograma.Observe(tiempoTranscurrido); // Registrar la duración en el histograma
+
+            return resultados;
+        }
+
+
+
+
+
+
+
+
+
+
 
 
         [HttpGet("buscar/{nombre}")] // Buscar Videojuego por nombre

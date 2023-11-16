@@ -9,8 +9,9 @@ using AutoMapper;
 using WebApi.Services;
 using WebApi.Models;
 using WebApi.Dtos;
-using Prometheus;
 using Microsoft.OpenApi.Models;
+
+using Prometheus;
 
 namespace WebApi
 {
@@ -82,11 +83,22 @@ namespace WebApi
 
             app.UseHttpsRedirection();
 
+
+
+
             app.UseHttpMetrics(); // captura métricas relacionadas con las solicitudes HTTP
+
+
+
+
 
             app.UseRouting();
             
             app.UseAuthorization();
+
+
+
+
 
             app.UseEndpoints(endpoints =>
             {
